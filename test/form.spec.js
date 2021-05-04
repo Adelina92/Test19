@@ -1,5 +1,8 @@
 import faker from 'faker';
 import puppeteer from 'puppeteer';
+
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 100000;
+
 const APP = 'https://kodaktor.ru/g/puppetform';
 const lead = {
   name: faker.name.firstName(),
@@ -18,6 +21,7 @@ beforeAll(async () => {
     args: [`--window-size=${width},${height}`]
   });
   page = await browser.newPage();
+  await page.goto(APP);
   await page.setViewport({ width, height });
 });
 afterAll(() => {
@@ -28,6 +32,9 @@ describe('Contact form', () => {
   test('lead can submit a contact request', async () => {
 
     await page.waitForSelector('[data-test=contact-form]');
+
+    await page.screenshot({ path: './screenshots/1.png' });
+
     await page.click('input[name=name]');
     await page.type('input[name=name]', lead.name);
     await page.click('input[name=email]');
@@ -37,7 +44,13 @@ describe('Contact form', () => {
     await page.click('textarea[name=message]');
     await page.type('textarea[name=message]', lead.message);
     await page.click('input[type=checkbox]');
+
+    await page.screenshot({ path: './screenshots/2.png' });
+
     await page.click('button[type=submit]');
     await page.waitForSelector('.modal');
-  }, 16000);
+
+    await page.screenshot({ path: './screenshots/3.png' });
+
+  }, 160000);
 });
